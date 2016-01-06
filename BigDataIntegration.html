@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>BigData Integration</title>
+
+<link rel="stylesheet" type="text/css" href="styles.css" />
+<link href='http://fonts.googleapis.com/css?family=Noto+Sans' rel='stylesheet' type='text/css'>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+<script>
+
+$(document).ready(function(){
+    $("button").click(function(){
+	var text = $("#s").val();  
+	
+        $.post("http://trona.herokuapp.com/query",
+        {
+          words: text
+        },
+        function(data,status){
+			var x = document.getElementById("searchSite").checked;
+			document.getElementById("resultsDiv").innerHTML = "";
+			
+			if (x == "1")
+			{
+				$("#resultsDiv").append("<h4>"+"Searching Terms : " + data.query );
+				$("#resultsDiv").append("<h4>"+"<br>" + "Time taken: " + data.time + " seconds" + "</br>");
+				$("#resultsDiv").append("<br>" + "Data Source groups found: " + data.num_results);
+				
+				var i;
+				var j;
+				i=0;
+				j=0;
+				var k=0;
+				
+				for (i = 0; i < data.num_results; i++) {
+						k=i+1;
+						$("#resultsDiv").append("<br>"+"<br>"+"<p>"+ "Group Name: " + data.results[i].name + "</p>"+"<br>");
+						$("#resultsDiv").append("<i>"+"About " + data.results[i].number_of_urls + " results found!"+"<br>");
+					for (j = 0; j < data.results[i].number_of_urls; j++) {
+						$("#resultsDiv").append("<span>"+"<br>" + "<a href=\"" + data.results[i].urls[j].url  + "\">" + data.results[i].urls[j].title + "</a>" + "&nbsp;" + "&nbsp;"+ "&nbsp;");
+						
+						$("#resultsDiv").append("Relevance: " + data.results[i].urls[j].relevance.toFixed(2) + "&nbsp;");
+						$("#resultsDiv").append("Confidence: " + data.results[i].urls[j].confidence.toFixed(2) +"<br>");
+						$("#resultsDiv").append("<h5>"+data.results[i].urls[j].url + "<br>"+"</h5>"+"</span>");
+						
+					}
+				}
+			}
+			else
+			{				
+				$("#resultsDiv").append("<h4>"+"Searching Terms : " + data.query );
+				$("#resultsDiv").append("<h4>"+"<br>" + "Time taken: " + data.time + " seconds" + "</br>");
+				$("#resultsDiv").append("<br>" + "Data Sources found: " + data.num_results);
+				
+				var i;
+				i=0;
+				
+				for (i = 0; i < data.num_results; i++) {
+					$("#resultsDiv").append("<span>"+"<br>" + "<a href=\"" + data.results_sorted_by_url[i].url  + "\">" + data.results_sorted_by_url[i].title + "</a>" + "&nbsp;" + "&nbsp;"+ "&nbsp;");
+					$("#resultsDiv").append("Relevance: " + data.results_sorted_by_url[i].relevance.toFixed(2) + "&nbsp;");
+					$("#resultsDiv").append("Confidence: " + data.results_sorted_by_url[i].confidence.toFixed(2) +"<br>");
+					$("#resultsDiv").append("<h5>"+data.results_sorted_by_url[i].url + "<br>"+"</h5>"+"</span>");
+				}				
+
+			}
+			}, "json");
+    });
+});
+
+//http://trona.herokuapp.com/query	
+</script>
+
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+
+
+</head>
+
+<body>
+<div id="page">
+    <h2>Big Data Integration</h2>
+    <form id="searchForm" action="" method="post">
+		<fieldset>
+           	<input id="s" type="text" name="s" placeholder="What are you searching for?" onkeydown="if (event.keyCode == 13)
+											{document.getElementById('submitButton').click(); return false;}" />
+			<?php $seachWords = $_POST ['words']; ?>
+            <button type="button" id="submitButton"></button>
+			<div id="searchInContainer">
+                <input type="radio" name="check" value="site" id="searchSite" checked />
+                <label for="searchSite" id="siteNameLabel">Search by groups</label>
+                
+                <input type="radio" name="check" value="web" id="searchWeb" />
+                <label for="searchWeb">Search by relevance</label>
+			</div>
+	
+        </fieldset>
+    </form>
+	
+	<div id="resultsDiv">
+	</div>
+</div>
+	
+<p class="credit"><a href="#">Big Data Integration team</a></p>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+</body>
+</html>
